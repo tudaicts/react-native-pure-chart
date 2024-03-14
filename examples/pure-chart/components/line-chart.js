@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, TouchableWithoutFeedback, Text, Animated, Easing, ScrollView, StyleSheet } from 'react-native'
+import { View, TouchableWithoutFeedback, Text, Animated, Easing, ScrollView, StyleSheet, I18nManager } from 'react-native'
 import {initData, drawYAxis, drawGuideLine, drawYAxisLabels, numberWithCommas, drawXAxis, drawXAxisLabels} from '../common'
 
 class LineChart extends React.Component {
@@ -53,7 +53,7 @@ class LineChart extends React.Component {
     let x = (0 - width / 2) * Math.cos(rad) - (0 - width / 2) * Math.sin(rad)
     let y = (0 - width / 2) * Math.sin(rad) + (0 - width / 2) * Math.cos(rad)
 
-    return [ {translateX: (-1 * x) - width / 2}, {translateY: (-1 * y) + width / 2}, { rotate: rad + 'rad' } ]
+    return [ { scaleX: I18nManager.isRTL ? -1 : 1 }, {translateX: (-1 * x) - width / 2}, {translateY: (-1 * y) + width / 2}, { rotate: rad + 'rad' } ]
   }
 
   drawCoordinate (index, start, end, backgroundColor, lineStyle, isBlank, lastCoordinate, seriesIndex) {
@@ -102,7 +102,7 @@ class LineChart extends React.Component {
         {!lastCoordinate && seriesIndex === 0 ? (
           <View style={StyleSheet.flatten([styles.guideLine, {
             width: dx,
-            borderRightColor: this.props.xAxisGridLineColor
+            borderEndColor: this.props.xAxisGridLineColor
           }])} />
         ) : null}
         {seriesIndex === this.state.sortedData.length - 1 && (
@@ -130,7 +130,7 @@ class LineChart extends React.Component {
               width: dx,
               height: '100%',
               position: 'absolute',
-              marginLeft: -1 * dx / 2,
+              marginStart: -1 * dx / 2,
               backgroundColor: '#FFFFFF01'
             }} />
           </TouchableWithoutFeedback>
@@ -159,7 +159,7 @@ class LineChart extends React.Component {
           width: size,
           height: size,
 
-          left: point.gap - size / 2,
+          start: point.gap - size / 2,
           bottom: point.ratioY - size / 2,
 
           borderColor: color,
@@ -176,7 +176,7 @@ class LineChart extends React.Component {
 
       <View key={key} style={{
         position: 'absolute',
-        left: index === 0 ? point.gap : point.gap - size / 2,
+        start: index === 0 ? point.gap : point.gap - size / 2,
         bottom: point.ratioY + 10,
         backgroundColor: 'transparent',
         width: index !== 0 ? 200 : undefined
@@ -253,12 +253,12 @@ class LineChart extends React.Component {
 
       return (
         <View style={StyleSheet.flatten([styles.selectedWrapper, {
-          left: left,
+          start: left,
           justifyContent: 'center'
         }])}>
           <View style={StyleSheet.flatten([styles.selectedLine, {
             backgroundColor: this.props.selectedColor,
-            marginLeft: gap
+            marginStart: gap
           }])} />
 
           <View style={StyleSheet.flatten([styles.selectedBox])}>
@@ -269,11 +269,11 @@ class LineChart extends React.Component {
                   {dataObject.x ? (
                     <Text style={styles.tooltipTitle}>{dataObject.x}</Text>
                 ) : null}
-                  <View style={{flexDirection: 'row', paddingLeft: 5, alignItems: 'center'}}>
+                  <View style={{flexDirection: 'row', paddingStart: 5, alignItems: 'center'}}>
                     <View style={{
                       width: 10,
                       height: 5,
-                      marginRight: 3,
+                      marginEnd: 3,
                       borderRadius: 2,
                       backgroundColor: !series.seriesColor ? this.props.primaryColor : series.seriesColor
                     }} />
@@ -315,7 +315,7 @@ class LineChart extends React.Component {
                   {this.state.sortedData.map((obj, index) => {
                     return (
                       <Animated.View key={'animated_' + index} style={{
-                        transform: [{scaleY: fadeAnim}],
+                        transform: [{scaleY: fadeAnim},{scaleX: I18nManager.isRTL ? -1 : 1}],
                         flexDirection: 'row',
                         alignItems: 'flex-end',
                         height: '100%',
@@ -360,17 +360,17 @@ LineChart.defaultProps = {
 
 const styles = StyleSheet.create({
   wrapper: {
-    flexDirection: 'row',
+    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     overflow: 'hidden'
   },
   yAxisLabelsWrapper: {
-    paddingRight: 5
+    paddingEnd: 5
   },
   chartViewWrapper: {
-    flexDirection: 'row',
+    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     alignItems: 'flex-end',
     margin: 0,
-    paddingRight: 0,
+    paddingEnd: 0,
     overflow: 'hidden'
   },
   coordinateWrapper: {
@@ -385,8 +385,8 @@ const styles = StyleSheet.create({
   guideLine: {
     position: 'absolute',
     height: '100%',
-    borderRightColor: '#e0e0e050',
-    borderRightWidth: 1
+    borderEndColor: '#e0e0e050',
+    borderEndWidth: 1
   },
   absolute: {
     position: 'absolute',
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     position: 'absolute',
     padding: 3,
-    marginLeft: 5,
+    marginStart: 5,
     justifyContent: 'center'
   },
   tooltipTitle: {fontSize: 10},
@@ -423,3 +423,4 @@ const styles = StyleSheet.create({
 })
 
 export default LineChart
+

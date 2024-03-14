@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
-import {View, Text} from 'react-native'
+import {View, Text, I18nManager} from 'react-native'
 
 const SINGLE_SERIES_WITH_NUMBERS = 0
 const SINGLE_SERIES_WITH_OBJECTS = 1
@@ -335,7 +335,8 @@ export const drawXAxisLabels = (sortedData, gap, color = '#000000', showEvenNumb
     <View style={{
       width: '100%',
       paddingVertical: 10,
-      height: 10
+      height: 10,
+      transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }]
     }}>
       {sortedData.map((data, i) => {
         // if (data[3] && i % 2 === 1) {
@@ -348,7 +349,7 @@ export const drawXAxisLabels = (sortedData, gap, color = '#000000', showEvenNumb
               width: gap,
               alignItems: 'center'
             }}>
-              <Text style={{fontSize: 9, color: color}}>
+              <Text style={{fontSize: 9, color: color, transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }]}}>
                 {
                   // data[3]
                   data['x']
@@ -363,3 +364,4 @@ export const drawXAxisLabels = (sortedData, gap, color = '#000000', showEvenNumb
     </View>
   )
 }
+
